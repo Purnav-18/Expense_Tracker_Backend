@@ -12,8 +12,28 @@ const app = express();
 
 // Middlewares
 app.use(express.json());
+
+// CORS setup
+const allowedOrigins = [
+    'http://localhost:3000', // local dev
+    'https://expense-tracker-backend-pied-iota.vercel.app', // deployed frontend
+];
+
+app.use(cors({
+    origin: function (origin, callback) {
+        // allow requests with no origin (like mobile apps or curl)
+        if (!origin) return callback(null, true);
+        if (allowedOrigins.indexOf(origin) === -1) {
+            const msg = `The CORS policy for this site does not allow access from the specified Origin.`;
+            return callback(new Error(msg), false);
+        }
+        return callback(null, true);
+    },
+    credentials: true, // allow cookies/auth headers if needed
+}));
+
+// Logging
 app.use(morgan('dev'));
-app.use(cors({ origin: process.env.CLIENT_URL || '*' }));
 
 // Routes
 app.use('/api/auth', require('./routes/auth'));
@@ -29,6 +49,7 @@ if (process.env.NODE_ENV !== 'production') {
     app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 }
 
+// Root route
 app.get('/', (req, res) => {
     res.send('Backend is running!');
 });
