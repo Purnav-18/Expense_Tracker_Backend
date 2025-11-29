@@ -1,15 +1,10 @@
 {
   "name": "expense-tracker-backend",
   "version": "1.0.0",
-  "description": "Backend for Expense Tracker (Node + Express + MongoDB)",
-  "main": "server.js",
+  "main": "api/index.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "nodemon server.js"
+    "dev": "nodemon api/index.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "MIT",
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
@@ -19,8 +14,5 @@
     "jsonwebtoken": "^9.0.0",
     "mongoose": "^7.0.0",
     "morgan": "^1.10.0"
-  },
-  "devDependencies": {
-    "nodemon": "^3.1.11"
   }
 }
