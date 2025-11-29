@@ -10,49 +10,43 @@ connectDB();
 
 const app = express();
 
-// Middlewares
-app.use(express.json());
-
-// CORS setup
+// ================== CORS ==================
 const allowedOrigins = [
-    'http://localhost:3000', // local dev
-    'https://expense-tracker-backend-pied-iota.vercel.app', // deployed frontend
+  'http://localhost:3000', // local dev
+  'https://expense-tracker-frontend-859b.vercel.app', // deployed frontend
 ];
 
 app.use(cors({
-    origin: function (origin, callback) {
-        // allow requests with no origin (like mobile apps or curl)
-        if (!origin) return callback(null, true);
-        if (allowedOrigins.indexOf(origin) === -1) {
-            const msg = `The CORS policy for this site does not allow access from the specified Origin.`;
-            return callback(new Error(msg), false);
-        }
-        return callback(null, true);
-    },
-    credentials: true, // allow cookies/auth headers if needed
+  origin: function (origin, callback) {
+    // allow requests with no origin (like curl or Postman)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) === -1) {
+      const msg = `CORS Error: ${origin} not allowed`;
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,
 }));
 
-// Logging
+// ================== Middlewares ==================
+app.use(express.json());
 app.use(morgan('dev'));
 
-// Routes
+// ================== Routes ==================
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/expenses', require('./routes/expenses'));
 app.use('/api/categories', require('./routes/categories'));
 
-// Error handler
+// ================== Error Handler ==================
 app.use(errorHandler);
 
-// Local server only
-if (process.env.NODE_ENV !== 'production') {
-    const PORT = process.env.PORT || 5000;
-    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-}
-
-// Root route
+// ================== Root ==================
 app.get('/', (req, res) => {
-    res.send('Backend is running!');
+  res.send('Backend is running!');
 });
 
-// Export for Vercel
+// ================== Export for Vercel ==================
 module.exports = app;
