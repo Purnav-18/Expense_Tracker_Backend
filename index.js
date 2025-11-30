@@ -13,7 +13,7 @@ const app = express();
 // ================== CORS ==================
 const allowedOrigins = [
   'http://localhost:3000', // local dev
-  'https://expense-tracker-frontend-859b.vercel.app', // deployed frontend
+  'https://expense-tracker-backend-pied-iota.vercel.app', // deployed frontend
 ];
 
 app.use(cors({
