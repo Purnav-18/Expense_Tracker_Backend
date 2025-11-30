@@ -1,6 +1,5 @@
 require('dotenv').config();
 const express = require('express');
-const cors = require('cors');
 const morgan = require('morgan');
 const connectDB = require('./config/db');
 const errorHandler = require('./middleware/errorHandler');
@@ -10,43 +9,36 @@ connectDB();
 
 const app = express();
 
-// ================== CORS ==================
-const allowedOrigins = [
-  'http://localhost:3000', // local dev
-  'https://expense-tracker-backend-pied-iota.vercel.app', // deployed frontend
-];
+// ===== Allow All CORS =====
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.header("Access-Control-Allow-Credentials", "true");
 
-app.use(cors({
-  origin: function (origin, callback) {
-    // allow requests with no origin (like curl or Postman)
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) === -1) {
-      const msg = `CORS Error: ${origin} not allowed`;
-      return callback(new Error(msg), false);
-    }
-    return callback(null, true);
-  },
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true,
-}));
+  if (req.method === "OPTIONS") {
+    return res.status(200).end();
+  }
 
-// ================== Middlewares ==================
+  next();
+});
+
+// Middlewares
 app.use(express.json());
 app.use(morgan('dev'));
 
-// ================== Routes ==================
+// Routes
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/expenses', require('./routes/expenses'));
 app.use('/api/categories', require('./routes/categories'));
 
-// ================== Error Handler ==================
+// Error Handler
 app.use(errorHandler);
 
-// ================== Root ==================
+// Root
 app.get('/', (req, res) => {
   res.send('Backend is running!');
 });
 
-// ================== Export for Vercel ==================
+// Export for Vercel
 module.exports = app;
